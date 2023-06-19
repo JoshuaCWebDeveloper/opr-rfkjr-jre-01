@@ -1,0 +1,14 @@
+{
+  "name": "opr-rfkjr-jre-01",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "clv-template": "0.0.6",
+    "liqvid-scripts": "0.0.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "scripts": {
+    "start": "liqvid serve"
+  }
+}
