@@ -6,7 +6,36 @@ import { Media } from 'liqvid';
 import styled from 'styled-components';
 
 const StyledVideo = styled.video`
+    position: relative;
     width: 100%;
+
+    .vjs-hidden,
+    &.vjs-controls-disabled .vjs-control-bar {
+        display: none;
+    }
+
+    .vjs-seeking .vjs-loading-spinner,
+    .vjs-waiting .vjs-loading-spinner {
+        animation: vjs-spinner-show 0s linear 0.3s forwards;
+        display: block;
+    }
+
+    .vjs-loading-spinner {
+        background-clip: padding-box;
+        border: 6px solid #2b333fb3;
+        border-radius: 25px;
+        box-sizing: border-box;
+        display: none;
+        height: 50px;
+        left: 50%;
+        margin: -25px 0 0 -25px;
+        opacity: 0.85;
+        position: absolute;
+        text-align: left;
+        top: 50%;
+        visibility: hidden;
+        width: 50px;
+    }
 
     video {
         width: 100%;
@@ -22,13 +51,7 @@ export class VideoJs extends Media {
     declare domElement: HTMLVideoElement;
 
     instantiateVideoJs() {
-        const {
-            start,
-            children: _,
-            obstructCanPlay: _1,
-            obstructCanPlayThrough: _2,
-            ...attrs
-        } = this.props;
+        const { start } = this.props;
 
         // Create the video.js player instance
         this.videoJsPlayer = videojs(this.domElement, {
@@ -37,7 +60,8 @@ export class VideoJs extends Media {
                     overrideNative: true,
                 },
             },
-            ...attrs,
+            controls: false,
+            bigPlayButton: false,
         });
 
         // Set the start time if specified
@@ -56,6 +80,14 @@ export class VideoJs extends Media {
     // }
 
     override render() {
+        const {
+            start: _3,
+            children,
+            obstructCanPlay: _1,
+            obstructCanPlayThrough: _2,
+            ...props
+        } = this.props;
+
         return (
             <StyledVideo
                 ref={node => {
@@ -66,8 +98,9 @@ export class VideoJs extends Media {
                     this.instantiateVideoJs();
                 }}
                 className="video-js vjs-default-skin vjs-big-play-centered"
+                {...props}
             >
-                {this.props.children}
+                {children}
             </StyledVideo>
         );
     }
