@@ -1,18 +1,26 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "alwaysStrict": true,
     "incremental": true,
     "jsx": "react-jsx",
-    "lib": ["es2015", "es2016", "es2017", "dom"],
     "moduleResolution": "node",
     "pretty": true,
     "removeComments": true,
-    "target": "es2017",
+    "target": "ESNext",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "lib": ["dom", "esnext"],
 
     "paths": {
       "@env/*": ["./src/@development/*", "./src/@production/*"]
     }
   },
-  "files": ["./src/index.tsx"]
+  "include": ["src/**/*"]
 }
