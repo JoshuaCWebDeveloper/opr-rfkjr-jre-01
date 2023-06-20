@@ -1,8 +1,27 @@
 import { Player as LiqvidPlayer, Script, usePlayer } from 'liqvid';
 import React, { ReactElement, ReactNode, useEffect, useMemo } from 'react';
+import styled from 'styled-components';
 
-// resources
-import controls from '@env/controls';
+const StyledPlayer = styled.div`
+    .lv-player {
+        position: relative;
+        height: 100%;
+        width: initial;
+    }
+
+    .lv-canvas {
+        user-select: initial;
+        width: 100%;
+        height: 100%;
+    }
+
+    .lv-controls {
+        top: initial;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+`;
 
 type Marker = {
     id: string;
@@ -113,12 +132,18 @@ const DisablePause = () => {
 };
 
 type PlayerProps = {
+    className?: string;
     children: ReactNode;
     duration: number;
     onScriptChange?: (script: Script) => void;
 };
 
-export const Player = ({ children, duration, onScriptChange }: PlayerProps) => {
+export const Player = ({
+    className = '',
+    children,
+    duration,
+    onScriptChange,
+}: PlayerProps) => {
     // extract marker info from our children and add marker props to them
     const { rawMarkers, updatedChildren } = processChildren(children);
 
