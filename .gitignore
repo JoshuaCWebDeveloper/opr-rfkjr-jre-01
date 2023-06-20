@@ -12,4 +12,6 @@ yarn-error.log*
 
 .vscode
 
+dist
 static/bundle.js
+static/video
