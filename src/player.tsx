@@ -1,4 +1,4 @@
-import { Player as LiqvidPlayer, Script } from 'liqvid';
+import { Player as LiqvidPlayer, Script, usePlayer } from 'liqvid';
 import React, { ReactElement, ReactNode, useEffect, useMemo } from 'react';
 
 // resources
@@ -85,6 +85,33 @@ const processChildren = (children: ReactNode): ChildData => {
     return loopChildren(children);
 };
 
+const DisablePause = () => {
+    // since this calls usePlayer(), cannot put directly in <MyVideo>
+    const player = usePlayer();
+    useEffect(() => {
+        // disable pause on canvas click
+        player.hub.on('canvasClick', () => false);
+        // re-enable pause on video/audio click
+        player.canvas.addEventListener('click', e => {
+            // if target element is video or audio
+            if (
+                e.target instanceof HTMLVideoElement ||
+                e.target instanceof HTMLAudioElement
+            ) {
+                // if paused
+                if (player.playback.paused) {
+                    // play
+                    player.playback.play();
+                } else {
+                    // pause
+                    player.playback.pause();
+                }
+            }
+        });
+    }, []);
+    return null;
+};
+
 type PlayerProps = {
     children: ReactNode;
     duration: number;
@@ -144,9 +171,13 @@ export const Player = ({ children, duration, onScriptChange }: PlayerProps) => {
     }, [script]);
 
     return (
-        <LiqvidPlayer controls={controls} script={script}>
-            {updatedChildren}
-        </LiqvidPlayer>
+        <StyledPlayer>
+            <LiqvidPlayer className={className} script={script}>
+                {updatedChildren}
+
+                <DisablePause />
+            </LiqvidPlayer>
+        </StyledPlayer>
     );
 };
 

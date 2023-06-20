@@ -68,6 +68,12 @@ export class VideoJs extends Media {
         if (start) {
             this.videoJsPlayer.currentTime(start);
         }
+
+        // enable play/pause on click
+        this.videoJsPlayer.on('click', () => {
+            // pass event to video element
+            this.domElement.click();
+        });
     }
 
     // WARNING: The Liqvid Media base class gives us no way to execute code on unmount.
