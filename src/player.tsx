@@ -61,6 +61,7 @@ const processChildren = (children: ReactNode): ChildData => {
             // update props
             newProps = {
                 ...props,
+                className: `${props.className || ''} lv-controlled-element`,
                 'data-from-first': `timestamp/${enter}`,
                 'data-from-last': `timestamp/${exit}`,
             };
@@ -194,6 +195,50 @@ export const Player = ({
     useEffect(() => {
         onScriptChange?.(script);
     }, [script]);
+
+    // hook into the LV show/hide functionality
+    useEffect(() => {
+        // get controlled elements
+        const controlledElements = Array.from(
+            document.querySelectorAll('.lv-canvas .lv-controlled-element')
+        );
+
+        // override setAttribute and removeAttribute for each element
+        for (const element of controlledElements) {
+            const originalSetAttribute = element.setAttribute.bind(element);
+            const originalRemoveAttribute =
+                element.removeAttribute.bind(element);
+            const duration = parseInt(
+                (element as HTMLElement).dataset?.transitionDuration || '300'
+            );
+
+            element.setAttribute = (name: string, value: string) => {
+                if (name === 'aria-hidden' && value === 'true') {
+                    element.classList.remove('lv-show');
+                    element.classList.add('lv-hide');
+                    element.classList.add('lv-exiting');
+                    setTimeout(() => {
+                        element.classList.remove('lv-exiting');
+                    }, duration);
+                }
+
+                originalSetAttribute(name, value);
+            };
+
+            element.removeAttribute = (name: string) => {
+                if (name === 'aria-hidden') {
+                    element.classList.remove('lv-hide');
+                    element.classList.add('lv-show');
+                    element.classList.add('lv-entering');
+                    setTimeout(() => {
+                        element.classList.remove('lv-entering');
+                    }, duration);
+                }
+
+                originalRemoveAttribute(name);
+            };
+        }
+    }, []);
 
     return (
         <StyledPlayer>
