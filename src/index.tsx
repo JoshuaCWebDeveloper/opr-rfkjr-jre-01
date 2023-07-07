@@ -1,19 +1,20 @@
 import { createRoot } from 'react-dom/client';
 
-import { LiqvidVideo } from './liqvid';
 import { VideoJs } from './liqvid/video-js';
 import { Player } from './player';
 import styled from 'styled-components';
 import { useCallback, useRef } from 'react';
 import { Script } from 'liqvid';
 
-const Video = VideoJs as unknown as typeof LiqvidVideo;
-
 const StyledApp = styled.div`
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS',
+        sans-serif;
+
     display: flex;
     height: 100%;
 
-    .lv-player {
+    .player {
+        display: flex;
         flex: 1;
     }
 
@@ -63,6 +64,36 @@ const StyledApp = styled.div`
         font-size: 1rem;
         margin: 0;
     }
+
+    .title-screen {
+        background: #222;
+        color: #e1e1e1;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        position: absolute;
+        transition: opacity 1s ease-in-out;
+        width: 100%;
+        height: 100%;
+
+        h1 {
+            margin: 40px;
+            font-size: 3em;
+        }
+
+        p {
+            margin: 20px;
+            font-size: 2em;
+        }
+    }
+
+    .video-container {
+        position: absolute;
+        transition: opacity 1s ease-in-out;
+    }
 `;
 
 // parse an SMPTE timecode into milliseconds
@@ -90,14 +121,14 @@ function parseTimecode(timecode: string): number {
 
 const annotations = [
     [
-        '15:45',
-        '17:15',
+        '0:40',
+        '2:10',
         'Porter Bridges',
         `https://www.amazon.com/Bad-Reaction-Memoir-Sarah-Bridges/dp/1634505379`,
     ],
     [
-        '22:00',
-        '24:20',
+        '6:55',
+        '9:15',
         'Thimerosal: preservative or adjuvant?',
         `
         https://www.cdc.gov/vaccinesafety/concerns/thimerosal/index.html
@@ -105,10 +136,18 @@ const annotations = [
         `,
     ],
     [
-        '24:45',
-        '28:30',
+        '9:40',
+        '13:25',
         'Ethyl mercury',
         `https://en.wikipedia.org/wiki/Ethylmercury`,
+    ],
+    [
+        '0:32:30',
+        '0:37:10',
+        'Where Spanish Flu Deaths Vaccine Induced?',
+        `Sub-Claim: Spanish Flu was a bacterial infection, not a virus:
+        https://www.nih.gov/news-events/news-releases/bacterial-pneumonia-caused-most-deaths-1918-influenza-pandemic
+        `,
     ],
 ];
 
@@ -131,11 +170,13 @@ function App() {
         }
     };
 
+    const title = <h1>The Joe Rogan Experience #1999 - Robert Kennedy, Jr.</h1>;
+
     return (
         <StyledApp>
             <Player
                 className="content"
-                duration={(3 * 60 + 20) * 60 * 1000}
+                duration={parseTimecode('40:00')}
                 onScriptChange={handleScriptChange}
             >
                 <div className="blocks">
@@ -152,12 +193,47 @@ function App() {
                     ))}
                 </div>
 
-                <Video start={15000}>
+                <div
+                    className="title-screen"
+                    data-enter={parseTimecode('0:00')}
+                    data-exit={parseTimecode('0:10')}
+                >
+                    {title}
+                    <p>Porter Bridges</p>
+                    <p>Thimerosal: preservative or adjuvant?</p>
+                    <p>Ethyl mercury</p>
+                </div>
+
+                <VideoJs
+                    data-enter={parseTimecode('0:10')}
+                    data-exit={parseTimecode('30:00')}
+                    playbackStart={parseTimecode('15:00')}
+                >
                     <source
                         src="http://localhost:3001/video/jre-1999.m3u8"
                         type="application/x-mpegURL"
                     />
-                </Video>
+                </VideoJs>
+
+                <div
+                    className="title-screen"
+                    data-enter={parseTimecode('30:00')}
+                    data-exit={parseTimecode('30:10')}
+                >
+                    {title}
+                    <p>Where Spanish Flu Deaths Vaccine Induced?</p>
+                </div>
+
+                <VideoJs
+                    data-enter={parseTimecode('30:10')}
+                    data-exit={parseTimecode('40:00')}
+                    playbackStart={parseTimecode('1:50:00')}
+                >
+                    <source
+                        src="http://localhost:3001/video/jre-1999.m3u8"
+                        type="application/x-mpegURL"
+                    />
+                </VideoJs>
             </Player>
 
             <div className="annotation-list">

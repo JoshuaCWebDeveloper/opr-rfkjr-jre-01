@@ -6,7 +6,7 @@ const StyledPlayer = styled.div`
     .lv-player {
         position: relative;
         height: 100%;
-        width: initial;
+        width: 100%;
     }
 
     .lv-canvas {
@@ -241,7 +241,7 @@ export const Player = ({
     }, []);
 
     return (
-        <StyledPlayer>
+        <StyledPlayer className="player">
             <LiqvidPlayer className={className} script={script}>
                 {updatedChildren}
 
