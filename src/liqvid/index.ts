@@ -1,13 +1,17 @@
-import { Context, HTMLAttributes, PureComponent } from "react";
-import {Playback, Player, Video} from "liqvid";
+import { Playback, Player } from 'liqvid';
+import { Context, HTMLAttributes, PureComponent } from 'react';
 
-interface Props$1 extends HTMLAttributes<HTMLMediaElement> {
+export interface LiqvidProps extends HTMLAttributes<HTMLMediaElement> {
     obstructCanPlay?: boolean;
     obstructCanPlayThrough?: boolean;
     start?: number;
 }
 
-export declare class LiqvidMedia extends PureComponent<Props$1, Record<string, never>, Player> {
+export declare class LiqvidMedia extends PureComponent<
+    LiqvidProps,
+    Record<string, never>,
+    Player
+> {
     protected playback: Playback;
     protected player: Player;
     protected domElement: HTMLMediaElement | null;
@@ -18,7 +22,7 @@ export declare class LiqvidMedia extends PureComponent<Props$1, Record<string, n
         obstructCanPlayThrough: boolean;
     };
     static contextType: Context<Player>;
-    
+
     get end(): number;
     pause(): void;
     play(): Promise<void>;
