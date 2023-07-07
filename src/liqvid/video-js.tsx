@@ -75,6 +75,10 @@ class MediaController extends (Media as unknown as typeof LiqvidMedia) {
     }
 }
 
+type OnRequestCallback = (
+    url: string,
+    options: videojs.XhrOptions
+) => videojs.XhrOptions;
 export interface VideoJsMediaProps extends LiqvidProps {
     playbackStart?: number;
     ['data-enter']?: number;
@@ -82,6 +86,7 @@ export interface VideoJsMediaProps extends LiqvidProps {
     ['data-from-first']?: string;
     ['data-from-last']?: string;
     className?: string;
+    onRequest?: OnRequestCallback;
 }
 
 /** Liqvid equivalent of {@link HTMLVideoElement `<video>`}. */
@@ -188,6 +193,18 @@ export class VideoJs extends PureComponent<VideoJsMediaProps> {
             // pass event to video element
             this.videoDomElement?.click();
         });
+
+        // add our xhr hooks
+        if (this.props.onRequest) {
+            videojs.Vhs.xhr.beforeRequest = (options: videojs.XhrOptions) => {
+                options =
+                    this.props.onRequest?.(
+                        options.url ?? options.uri ?? '',
+                        options
+                    ) ?? options;
+                return options;
+            };
+        }
     }
 
     instantiateController() {
@@ -256,6 +273,7 @@ export class VideoJs extends PureComponent<VideoJsMediaProps> {
             obstructCanPlay: _1,
             obstructCanPlayThrough: _2,
             playbackStart: _4,
+            onRequest: _5,
             ['data-enter']: dataEnter,
             ['data-exit']: dataExit,
             ['data-from-first']: dataFromFirst,
