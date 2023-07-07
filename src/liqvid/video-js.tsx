@@ -11,15 +11,63 @@ const StyledWrapper = styled.div`
     position: relative;
     width: 100%;
 
+    @keyframes vjs-spinner-show {
+        to {
+            visibility: visible;
+        }
+    }
+
+    @keyframes vjs-spinner-spin {
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes vjs-spinner-fade {
+        0% {
+            border-top-color: #73859f;
+        }
+        20% {
+            border-top-color: #73859f;
+        }
+        35% {
+            border-top-color: white;
+        }
+        60% {
+            border-top-color: #73859f;
+        }
+        100% {
+            border-top-color: #73859f;
+        }
+    }
     .vjs-hidden,
-    &.vjs-controls-disabled .vjs-control-bar {
+    .vjs-controls-disabled .vjs-control-bar {
         display: none;
+    }
+
+    .vjs-control-text {
+        clip: rect(0 0 0 0);
+        border: 0;
+        height: 1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
     }
 
     .vjs-seeking .vjs-loading-spinner,
     .vjs-waiting .vjs-loading-spinner {
         animation: vjs-spinner-show 0s linear 0.3s forwards;
         display: block;
+        visibility: visible;
+    }
+
+    .vjs-seeking .vjs-loading-spinner:after,
+    .vjs-seeking .vjs-loading-spinner:before,
+    .vjs-waiting .vjs-loading-spinner:after,
+    .vjs-waiting .vjs-loading-spinner:before {
+        animation: vjs-spinner-spin 1.1s cubic-bezier(0.6, 0.2, 0, 0.8) infinite,
+            vjs-spinner-fade 1.1s linear infinite;
     }
 
     .vjs-loading-spinner {
@@ -37,6 +85,20 @@ const StyledWrapper = styled.div`
         top: 50%;
         visibility: hidden;
         width: 50px;
+
+        &:after,
+        &:before {
+            border: inherit;
+            border-color: #fff #0000 #0000;
+            border-radius: inherit;
+            box-sizing: inherit;
+            content: '';
+            height: inherit;
+            margin: -6px;
+            opacity: 1;
+            position: absolute;
+            width: inherit;
+        }
     }
 
     video {
