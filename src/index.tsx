@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client';
+import videojs from 'video.js';
 
 import { VideoJs } from './liqvid/video-js';
 import { Player } from './player';
@@ -97,7 +98,7 @@ const StyledApp = styled.div`
 `;
 
 // parse an SMPTE timecode into milliseconds
-function parseTimecode(timecode: string): number {
+const parseTimecode = (timecode: string): number => {
     const parts = timecode.split(':').map(Number);
 
     if (parts.some(isNaN)) {
@@ -117,7 +118,37 @@ function parseTimecode(timecode: string): number {
     }
 
     return milliseconds;
-}
+};
+
+let serverTimeDifference = 0;
+
+const getServerTimeDifference = () => {
+    const now = Date.now();
+    fetch('https://media.joshuacarter.tk').then(response => {
+        const dateHeader = response.headers.get('Date');
+
+        if (!dateHeader) {
+            console.warn(
+                'Missing date header during server time difference calc.'
+            );
+            return;
+        }
+
+        const timestamp = Date.parse(dateHeader);
+        serverTimeDifference = now - timestamp;
+    });
+};
+
+getServerTimeDifference();
+
+const generateProtectedHeaders = (url: string, options: videojs.XhrOptions) => {
+    if (!options.headers) {
+        options.headers = {};
+    }
+    options.headers['X-CSRF-TOKEN'] = Date.now() + serverTimeDifference;
+    options.headers['X-CSRF-ORIGIN'] = window.location.origin;
+    return options;
+};
 
 const annotations = [
     [
@@ -208,9 +239,14 @@ function App() {
                     data-enter={parseTimecode('0:10')}
                     data-exit={parseTimecode('30:00')}
                     playbackStart={parseTimecode('15:00')}
+                    onRequest={generateProtectedHeaders}
                 >
-                    <source
+                    {/* <source
                         src="http://localhost:3001/video/jre-1999.m3u8"
+                        type="application/x-mpegURL"
+                    /> */}
+                    <source
+                        src="https://media.joshuacarter.tk/protected/jre-1999/jre-1999.m3u8"
                         type="application/x-mpegURL"
                     />
                 </VideoJs>
@@ -228,9 +264,14 @@ function App() {
                     data-enter={parseTimecode('30:10')}
                     data-exit={parseTimecode('40:00')}
                     playbackStart={parseTimecode('1:50:00')}
+                    onRequest={generateProtectedHeaders}
                 >
-                    <source
+                    {/* <source
                         src="http://localhost:3001/video/jre-1999.m3u8"
+                        type="application/x-mpegURL"
+                    /> */}
+                    <source
+                        src="https://media.joshuacarter.tk/protected/jre-1999/jre-1999.m3u8"
                         type="application/x-mpegURL"
                     />
                 </VideoJs>
